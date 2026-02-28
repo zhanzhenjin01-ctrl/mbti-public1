@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI 性格测试</title>
+
+<style>
+body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
+    background:#f5f5f7;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.container{
+    width:90%;
+    max-width:480px;
+    text-align:center;
+}
+
+.card{
+    background:white;
+    border-radius:28px;
+    padding:40px 30px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.08);
+}
+
+h1{
+    font-size:28px;
+    font-weight:600;
+}
+
+.question{
+    margin:25px 0;
+    font-size:18px;
+}
+
+.option{
+    border:1px solid #e5e5e7;
+    border-radius:16px;
+    padding:14px;
+    margin:12px 0;
+    cursor:pointer;
+    transition:0.2s;
+}
+.option:hover{
+    background:#f2f2f7;
+}
+
+.qr{
+    margin-top:25px;
+    width:160px;
+}
+
+.sub{
+    margin-top:15px;
+    font-size:14px;
+    color:#8e8e93;
+    line-height:1.6;
+}
+
+.copy-btn{
+    margin-top:15px;
+    padding:10px 20px;
+    border:none;
+    border-radius:18px;
+    background:black;
+    color:white;
+    font-size:14px;
+    cursor:pointer;
+}
+
+#resultPage{ display:none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="card" id="testPage">
+    <h1>MBTI 性格测试</h1>
+    <div id="progress"></div>
+    <div class="question" id="questionText"></div>
+    <div id="options"></div>
+</div>
+
+<div class="card" id="resultPage">
+    <h1 id="resultType"></h1>
+    <p id="resultQuote" style="font-size:18px;margin-top:10px;"></p>
+
+    <img src="wechat.png" class="qr">
+
+    <div class="sub">
+        扫码关注公众号<br><br>
+        发送关键词：
+        <b id="keyword"></b>
+    </div>
+
+    <button class="copy-btn" id="copyButton" onclick="copyKeyword()">
+        一键复制关键词
+    </button>
+
+</div>
+
+</div>
+
+<script>
+let scores={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+let current=0;
+let currentKeyword="";
+
+const questions=[
+["你更享受？","社交互动","独处时间","E","I"],
+["你关注？","现实细节","未来可能","S","N"],
+["做决定时？","理性分析","情感考虑","T","F"],
+["做事风格？","按计划","随性","J","P"],
+["别人眼中你？","外向","内向","E","I"],
+["学习方式？","实际操作","概念理解","S","N"],
+["冲突时？","讲逻辑","讲感受","T","F"],
+["工作节奏？","提前规划","临时应变","J","P"],
+["你更喜欢？","团队合作","独立完成","E","I"],
+["思考习惯？","具体","抽象","S","N"],
+["你更看重？","效率","关系","T","F"],
+["生活状态？","有序","自由","J","P"],
+["社交能量？","越聊越兴奋","聊久会累","E","I"],
+["解决问题？","经验","灵感","S","N"],
+["评价自己？","冷静","温柔","T","F"]
+];
+
+const quotes={
+INTJ:"冷静布局者，天生的战略思考者。",
+INTP:"逻辑构建者，用理性探索世界。",
+ENTJ:"掌控全局的领导型人格。",
+ENTP:"天生创新者，挑战一切可能。",
+INFJ:"洞察人心的理想主义者。",
+INFP:"温柔且坚定的灵魂。",
+ENFJ:"点燃他人的引领者。",
+ENFP:"充满激情的梦想家。",
+ISTJ:"秩序与责任的执行者。",
+ISFJ:"默默守护的温暖力量。",
+ESTJ:"规则与效率的制定者。",
+ESFJ:"关系连接的桥梁。",
+ISTP:"冷静务实的实践派。",
+ISFP:"自由而敏感的艺术灵魂。",
+ESTP:"现实行动的掌控者。",
+ESFP:"活力四射的氛围担当。"
+};
+
+function loadQuestion(){
+    document.getElementById("progress").innerText=(current+1)+" / 15";
+    document.getElementById("questionText").innerText=questions[current][0];
+    let optionsDiv=document.getElementById("options");
+    optionsDiv.innerHTML="";
+    for(let i=1;i<=2;i++){
+        let div=document.createElement("div");
+        div.className="option";
+        div.innerText=questions[current][i];
+        div.onclick=()=>selectAnswer(questions[current][i+2]);
+        optionsDiv.appendChild(div);
+    }
+}
+
+function selectAnswer(type){
+    scores[type]++;
+    current++;
+    if(current<questions.length){
+        loadQuestion();
+    }else{
+        showResult();
+    }
+}
+
+function showResult(){
+    let result="";
+    result+=scores.E>=scores.I?"E":"I";
+    result+=scores.S>=scores.N?"S":"N";
+    result+=scores.T>=scores.F?"T":"F";
+    result+=scores.J>=scores.P?"J":"P";
+
+    currentKeyword="MBTI"+result+"2026";
+
+    document.getElementById("testPage").style.display="none";
+    document.getElementById("resultPage").style.display="block";
+    document.getElementById("resultType").innerText="你的类型是 "+result;
+    document.getElementById("resultQuote").innerText=quotes[result];
+    document.getElementById("keyword").innerText=currentKeyword;
+}
+
+function copyKeyword(){
+    navigator.clipboard.writeText(currentKeyword).then(()=>{
+        let btn=document.getElementById("copyButton");
+        btn.innerText="已复制 ✓";
+        btn.style.background="#34c759";
+    });
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>

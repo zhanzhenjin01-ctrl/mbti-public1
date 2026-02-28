@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>人格情绪测试</title>
+<style>
+body { font-family: Arial; background:#f5f7fa; padding:20px; }
+.container { max-width:600px; margin:auto; background:white; padding:25px; border-radius:10px; }
+.question { margin-bottom:25px; }
+.question h3 { margin-bottom:12px; }
+.option { display:block; margin-bottom:8px; padding:6px 0; }
+button { width:100%; padding:12px; background:#4a6fa5; color:white; border:none; border-radius:6px; font-size:16px; }
+button:hover { background:#3a5a85; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>你的人格情绪倾向测试</h2>
+<form id="quizForm">
+<div id="questions"></div>
+<button type="submit">查看结果</button>
+</form>
+</div>
+
+<script>
+const questions = [
+{
+q:"1. 当关系出现问题时，你通常？",
+o:["第一时间沟通解决","先冷静观察","反复思考自己哪里错了","假装没发生"]
+},
+{
+q:"2. 当对方回复变慢时，你会？",
+o:["直接询问原因","告诉自己别多想","开始焦虑猜测","压抑不安不表现"]
+},
+{
+q:"3. 你更害怕？",
+o:["失去沟通","被忽视","被抛弃","情绪失控"]
+},
+{
+q:"4. 当别人批评你时？",
+o:["理性讨论","表面接受内心难受","反复回想细节","装作无所谓"]
+},
+{
+q:"5. 你在关系中更容易？",
+o:["主动表达","慢慢退缩","情绪波动大","过度包容"]
+},
+{
+q:"6. 面对冲突时？",
+o:["解决问题","暂时逃避","情绪化","压抑自己"]
+},
+{
+q:"7. 你对未来关系的态度？",
+o:["乐观","谨慎","焦虑","顺其自然"]
+},
+{
+q:"8. 情绪低落时？",
+o:["找人倾诉","自己消化","反复自责","假装开心"]
+},
+{
+q:"9. 亲密关系中你更像？",
+o:["协调者","独行者","黏人型","隐忍型"]
+},
+{
+q:"10. 你是否容易过度思考？",
+o:["很少","偶尔","经常","几乎每天"]
+},
+{
+q:"11. 你是否迁就别人？",
+o:["很少","看情况","经常","几乎总是"]
+},
+{
+q:"12. 你是否害怕被抛弃？",
+o:["不太怕","有一点","很怕","非常怕"]
+},
+{
+q:"13. 你是否需要大量独处？",
+o:["不需要","偶尔","需要","必须"]
+},
+{
+q:"14. 你是否害怕亲密？",
+o:["不怕","有时","比较怕","很抗拒"]
+},
+{
+q:"15. 你是否压抑情绪？",
+o:["几乎不","偶尔","经常","总是"]
+},
+{
+q:"16. 你是否渴望被理解？",
+o:["适度","比较","强烈","极度"]
+},
+{
+q:"17. 你是否常感到孤独？",
+o:["很少","偶尔","经常","几乎一直"]
+},
+{
+q:"18. 你希望理想关系是？",
+o:["坦诚沟通","彼此独立","情感依赖","稳定安全"]
+}
+];
+
+const container = document.getElementById("questions");
+
+questions.forEach((item,index)=>{
+const div=document.createElement("div");
+div.className="question";
+div.innerHTML="<h3>"+item.q+"</h3>";
+
+item.o.forEach((opt,i)=>{
+div.innerHTML+=`
+<label class="option">
+<input type="radio" name="q${index}" value="${i}" required>
+${opt}
+</label>
+`;
+});
+
+container.appendChild(div);
+});
+
+document.getElementById("quizForm").addEventListener("submit",function(e){
+e.preventDefault();
+let scores=[0,0,0,0];
+const formData=new FormData(this);
+for(let value of formData.values()){
+scores[value]++;
+}
+
+let resultType="成长型";
+if(scores[2]>6) resultType="焦虑型";
+else if(scores[1]>6) resultType="回避型";
+else if(scores[3]>6) resultType="压抑型";
+
+localStorage.setItem("resultType",resultType);
+window.location.href="result.html";
+});
+</script>
+
+</body>
+</html>
