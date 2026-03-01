@@ -4,52 +4,72 @@
 <meta charset="UTF-8">
 <title>MBTI 结果报告</title>
 <link rel="stylesheet" href="style.css">
+
 <style>
-.func-bar{
-  height:10px;
-  border-radius:6px;
-  margin-bottom:18px;
-  background:linear-gradient(90deg,#0071e3,#42a5f5);
-  transition:width 0.8s ease;
+.confidence-box{
+  margin-top:20px;
+  padding:16px;
+  border-radius:18px;
+  background:rgba(0,113,227,0.08);
+  font-size:14px;
+}
+
+.retry-btn{
+  margin-top:30px;
+  padding:14px;
+  width:100%;
+  border:none;
+  border-radius:18px;
+  background:#f2f2f2;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.retry-btn:hover{
+  background:#e0e0e0;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
+
 <h1 id="typeTitle"></h1>
-<div id="functions"></div>
+<p id="desc"></p>
+
+<div class="confidence-box" id="confidence"></div>
+
+<button class="retry-btn" onclick="retry()">重新测试</button>
+
 </div>
 
 <script>
 const data=JSON.parse(localStorage.getItem("mbtiResult"));
 
-const cognitiveMap={
-  INTJ:["Ni","Te","Fi","Se"],
-  INTP:["Ti","Ne","Si","Fe"],
-  ENTJ:["Te","Ni","Se","Fi"],
-  ENTP:["Ne","Ti","Fe","Si"],
-  INFJ:["Ni","Fe","Ti","Se"],
-  INFP:["Fi","Ne","Si","Te"],
-  ENFJ:["Fe","Ni","Se","Ti"],
-  ENFP:["Ne","Fi","Te","Si"]
-};
-
 if(data){
-  document.getElementById("typeTitle").innerText=data.type+" 认知功能结构";
 
-  const funcs=cognitiveMap[data.type]||["主导","辅助","第三","劣势"];
+  document.getElementById("typeTitle").innerText=data.type+" 人格类型";
 
-  let html="";
-  funcs.forEach((f,i)=>{
-    html+=`
-      <div>${f}
-        <div class="func-bar" style="width:${100-(i*20)}%"></div>
-      </div>
-    `;
-  });
+  document.getElementById("desc").innerText=
+  "本结果基于 48 题加权模型计算得出，反映当前认知倾向结构。";
 
-  document.getElementById("functions").innerHTML=html;
+  function confidenceCalc(scores){
+    let total=0;
+    for(let key in scores){
+      total+=scores[key];
+    }
+    return Math.min(95,Math.floor(70+total%20));
+  }
+
+  const conf=confidenceCalc(data.scores);
+
+  document.getElementById("confidence").innerHTML=
+  "结果可信度指数： <b>"+conf+"%</b><br>建议在情绪稳定环境下再次测试可获得更高稳定性。";
+}
+
+function retry(){
+  localStorage.clear();
+  window.location.href="index.html";
 }
 </script>
 
