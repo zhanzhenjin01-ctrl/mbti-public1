@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>测试结果</title>
+<style>
+body{font-family:Arial;background:#f5f7fa;padding:20px;}
+.container{max-width:600px;margin:auto;background:white;padding:30px;border-radius:10px;}
+h2{margin-bottom:15px;}
+p{line-height:1.7;}
+button{width:100%;padding:12px;background:#4a6fa5;color:white;border:none;border-radius:6px;font-size:16px;margin-top:20px;}
+button:hover{background:#3a5a85;}
+.highlight{background:#f0f4ff;padding:15px;border-radius:8px;margin-top:15px;}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>你的情绪人格类型：</h2>
+<h3 id="type"></h3>
+<div id="analysis"></div>
+<button onclick="follow()">关注公众号 · 进进的成长日记</button>
+</div>
+
+<script>
+const type=localStorage.getItem("resultType");
+document.getElementById("type").innerText=type;
+
+let content="";
+
+if(type==="焦虑型"){
+content=`
+<p>你是一个对关系非常认真、投入极深的人。</p>
+<p>你渴望被回应、被确认、被需要。</p>
+<p>你的敏感，其实来源于强烈的在乎。</p>
+<div class="highlight">
+<p><strong>深层特征：</strong></p>
+<p>✔ 情绪波动大</p>
+<p>✔ 容易过度思考</p>
+<p>✔ 渴望稳定却害怕失去</p>
+</div>
+<p><strong>成长方向：</strong>建立内在安全感，把关注点从“对方会不会离开”转向“我是否值得被爱”。</p>
+`;
+}
+else if(type==="回避型"){
+content=`
+<p>你习惯独立，不喜欢情绪失控。</p>
+<p>你不是冷漠，只是更擅长自我保护。</p>
+<div class="highlight">
+<p><strong>深层特征：</strong></p>
+<p>✔ 需要空间</p>
+<p>✔ 害怕依赖</p>
+<p>✔ 情绪表达较少</p>
+</div>
+<p><strong>成长方向：</strong>学会在安全的关系里，尝试一点点敞开。</p>
+`;
+}
+else if(type==="压抑型"){
+content=`
+<p>你总是把情绪往心里放。</p>
+<p>你习惯忍耐，不轻易麻烦别人。</p>
+<div class="highlight">
+<p><strong>深层特征：</strong></p>
+<p>✔ 外表冷静</p>
+<p>✔ 内心积压</p>
+<p>✔ 容易疲惫</p>
+</div>
+<p><strong>成长方向：</strong>允许自己表达真实感受。</p>
+`;
+}
+else{
+content=`
+<p>你拥有不错的情绪平衡能力。</p>
+<p>你在成长中，也在理解自己。</p>
+<div class="highlight">
+<p><strong>优势特征：</strong></p>
+<p>✔ 情绪觉察力</p>
+<p>✔ 理性与感性平衡</p>
+<p>✔ 稳定性较高</p>
+</div>
+<p><strong>成长方向：</strong>持续觉察，让自己更成熟。</p>
+`;
+}
+
+content+=`
+<hr>
+<p><strong>最后想对你说：</strong></p>
+<p>你不是问题本身。</p>
+<p>你只是带着某种保护机制在生活。</p>
+<p>理解自己，是一切改变的开始。</p>
+<p>如果这些内容让你有共鸣，欢迎来到公众号，我们会继续陪你慢慢成长。</p>
+`;
+
+document.getElementById("analysis").innerHTML=content;
+
+function follow(){
+alert("请微信搜索公众号：进进的成长日记");
+}
+</script>
+
+</body>
+</html>
