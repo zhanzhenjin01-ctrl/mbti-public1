@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MBTI 报告</title>
+<title>MBTI 人格报告</title>
 <script src="mbti.js"></script>
+
 <style>
 body{
 margin:0;
@@ -13,39 +14,27 @@ background:#f5f5f7;
 display:flex;
 justify-content:center;
 }
-
 .wrapper{
 max-width:820px;
 padding:120px 40px;
 }
-
 .type{
 font-size:56px;
 font-weight:600;
-color:#1d1d1f;
-margin-bottom:10px;
+margin-bottom:20px;
 }
-
-.tagline{
-font-size:20px;
-color:#6e6e73;
-margin-bottom:60px;
+.content{
+font-size:17px;
+line-height:1.9;
+color:#2c2c2e;
+white-space:pre-line;
 }
-
-.section{
-margin-bottom:50px;
-}
-
-.section h3{
-font-size:18px;
-margin-bottom:12px;
-color:#1d1d1f;
-}
-
-.section p{
-font-size:16px;
-line-height:1.8;
-color:#3a3a3c;
+.cta{
+margin-top:80px;
+padding:40px;
+background:#ffffff;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.05);
 }
 </style>
 </head>
@@ -53,28 +42,18 @@ color:#3a3a3c;
 <body>
 
 <div class="wrapper">
-
 <div class="type" id="type"></div>
-<div class="tagline" id="exclusive"></div>
+<div class="content" id="report"></div>
 
-<div class="section">
-<h3>人格特征</h3>
-<p id="strength"></p>
-</div>
-
-<div class="section">
-<h3>思维与决策风格</h3>
-<p id="decision"></p>
-</div>
-
-<div class="section">
-<h3>成长提醒</h3>
-<p id="blind"></p>
-</div>
-
-<div class="section">
-<h3>适合发展的领域</h3>
-<p id="career"></p>
+<div class="cta">
+<h3>持续陪伴你的成长</h3>
+<p>
+如果这份报告让你对自己有新的理解，
+欢迎关注我的公众号 <strong>「进进的成长日记」</strong>。
+<br><br>
+我会持续分享人格成长、认知升级、情绪管理与自我突破的深度内容。
+我们不只是了解自己，而是一起成为更稳定、更成熟、更有力量的人。
+</p>
 </div>
 
 </div>
@@ -83,36 +62,141 @@ color:#3a3a3c;
 
 const scores=JSON.parse(localStorage.getItem("mbtiScores"));
 const type=calculateType(scores);
-const data=database[type];
-
 document.getElementById("type").innerText=type;
 
-const emotionalText={
-INTJ:"你天生具备战略家的远见与冷静判断，在复杂世界中你总能看到结构与趋势。",
-INFP:"你拥有极其细腻的内心与理想主义灵魂，你的温柔本身就是力量。",
-ENTJ:"你是天生的领导者，目标清晰、行动果断，推动世界向前。",
-ENFP:"你自带光芒与感染力，你的热情能点燃他人的可能性。",
-ISTJ:"你稳重可靠，是秩序与责任的守护者。",
-ISFJ:"你温暖而坚定，总在默默守护重要的人。",
-ESTP:"你行动敏捷，适应力极强，天生的现实掌控者。",
-ESFP:"你让生活变得鲜活，带来快乐与能量。",
-INFJ:"你拥有深刻洞察力，能够理解他人未说出口的情绪。",
-ENFJ:"你擅长引导与激励，是团队中的精神核心。",
-ISTP:"你冷静理性，擅长拆解复杂问题。",
-ISFP:"你温柔而真实，活在当下的美感之中。",
-ENTP:"你思想敏锐，永远在寻找新的可能性。",
-ESTJ:"你高效执行，擅长构建秩序。",
-INTP:"你逻辑缜密，沉浸在思想的世界。",
-ESFJ:"你善于连接人与人，让关系充满温度。"
+const reports={
+
+INTJ:`战略型思考者。
+
+你习惯在混乱中建立结构，在复杂中寻找逻辑。你并不追求表面的热闹，而是更关注长期价值与效率。你对目标有清晰规划，对资源有理性分配，这使你在人群中显得冷静而可靠。
+
+你最大的优势在于前瞻性与系统思维。你能看到趋势，而不仅是眼前。
+
+成长建议：允许情绪进入决策空间。理性很强，但情感的连接会让你更完整。`,
+
+INFP:`理想主义者。
+
+你拥有高度的内在价值系统。你对真实与意义极其敏感，不愿随波逐流。你温柔而坚定，表面柔软，内心却有清晰边界。
+
+你最大的优势在于共情与创造力。你能够理解复杂的情绪结构，并用自己的方式表达。
+
+成长建议：让理想落地。建立执行路径，你的梦想值得实现。`,
+
+ENTJ:`组织与掌控者。
+
+你天生具有领导气质，决策果断、目标明确。你不害怕承担责任，甚至在压力下会表现更强。
+
+你的优势在于执行力与战略布局。
+
+成长建议：学会倾听不同节奏的人，让团队更有温度。`,
+
+ENFP:`灵感激发者。
+
+你拥有感染力与创造力。你对可能性充满兴趣，对人保持好奇。你不喜欢被限制。
+
+你的优势在于连接人与概念。
+
+成长建议：持续专注，让灵感沉淀成成果。`,
+
+ISTJ:`秩序维护者。
+
+你踏实、可靠、有责任感。你信任规则与流程，在稳定中创造价值。
+
+你的优势在于细节与执行。
+
+成长建议：适度拥抱变化，会拓宽你的视野。`,
+
+ISFJ:`守护型人格。
+
+你温暖而低调，总是默默为他人付出。你对关系高度忠诚。
+
+优势在于稳定与关怀。
+
+成长建议：为自己设立边界。`,
+
+ESTP:`现实行动者。
+
+你适应力强，行动迅速。你喜欢当下的挑战。
+
+优势在于反应速度与执行力。
+
+成长建议：为长期目标预留空间。`,
+
+ESFP:`生活享受者。
+
+你热情、乐观、善于营造氛围。你让环境充满活力。
+
+优势在于情绪感染力。
+
+成长建议：培养长期规划能力。`,
+
+INFJ:`洞察者。
+
+你对人性与未来趋势有敏锐直觉。你追求深度与意义。
+
+优势在于远见与同理心。
+
+成长建议：学会释放过高的自我要求。`,
+
+ENFJ:`引导者。
+
+你擅长激励与支持他人。你对群体氛围高度敏感。
+
+优势在于影响力。
+
+成长建议：别忽略自己的需求。`,
+
+ISTP:`问题拆解者。
+
+你冷静、理性、擅长解决技术与结构问题。
+
+优势在于分析能力。
+
+成长建议：尝试更多情绪表达。`,
+
+ISFP:`真实体验者。
+
+你重视当下体验，追求真实感受。
+
+优势在于审美与情感敏锐。
+
+成长建议：建立稳定目标。`,
+
+ENTP:`创新辩论者。
+
+你思想敏捷，喜欢挑战观点。
+
+优势在于创新与逻辑。
+
+成长建议：提升持续执行力。`,
+
+ESTJ:`管理者。
+
+你高效、有组织、擅长推动任务完成。
+
+优势在于结构与领导。
+
+成长建议：学会弹性思维。`,
+
+INTP:`思考者。
+
+你沉浸在逻辑世界，喜欢探索抽象理论。
+
+优势在于深度思考。
+
+成长建议：加强现实连接。`,
+
+ESFJ:`关系协调者。
+
+你善于维系关系，关注群体和谐。
+
+优势在于支持与组织。
+
+成长建议：建立独立判断。`
 };
 
-document.getElementById("exclusive").innerText=
-emotionalText[type] || "你拥有独特的人格结构，使你在人群中不可复制。";
-
-document.getElementById("strength").innerText=data.strength;
-document.getElementById("decision").innerText=data.decision;
-document.getElementById("blind").innerText=data.blind;
-document.getElementById("career").innerText=data.career;
+document.getElementById("report").innerText=
+reports[type] || "你拥有独特的人格结构，持续探索自我将带来更成熟的人生。";
 
 </script>
 
