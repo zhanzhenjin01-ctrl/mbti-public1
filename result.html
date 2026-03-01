@@ -7,10 +7,46 @@
 <script src="mbti.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:center;margin:0;}
-.container{max-width:900px;margin:60px auto;}
-.card{background:#fff;padding:40px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.05);margin-bottom:30px;}
-.type{font-size:48px;font-weight:700;margin-bottom:20px;}
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+background:linear-gradient(135deg,#eef2f7,#d9e3f0);
+display:flex;
+justify-content:center;
+margin:0;
+}
+
+.container{
+max-width:900px;
+margin:80px auto;
+}
+
+.card{
+background:#fff;
+padding:60px;
+border-radius:24px;
+box-shadow:0 20px 60px rgba(0,0,0,0.08);
+margin-bottom:40px;
+}
+
+.type{
+font-size:52px;
+font-weight:700;
+margin-bottom:10px;
+}
+
+.subtitle{
+font-size:18px;
+color:#666;
+margin-bottom:30px;
+}
+
+.highlight{
+background:#f5f7fa;
+padding:20px;
+border-radius:14px;
+margin-bottom:30px;
+line-height:1.7;
+}
 </style>
 </head>
 <body>
@@ -19,11 +55,14 @@ body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:c
 
 <div class="card">
 <div class="type" id="type"></div>
-<p id="praise"></p>
-<p><strong>核心优势：</strong><span id="strength"></span></p>
-<p><strong>决策风格：</strong><span id="decision"></span></p>
-<p><strong>潜在盲区：</strong><span id="blind"></span></p>
-<p><strong>适合领域：</strong><span id="career"></span></p>
+<div class="subtitle" id="praise"></div>
+
+<div class="highlight" id="exclusive"></div>
+
+<p><strong>核心优势：</strong> <span id="strength"></span></p>
+<p><strong>决策风格：</strong> <span id="decision"></span></p>
+<p><strong>潜在盲区：</strong> <span id="blind"></span></p>
+<p><strong>适合领域：</strong> <span id="career"></span></p>
 </div>
 
 <div class="card">
@@ -34,28 +73,13 @@ body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:c
 
 <script>
 
-const stored = localStorage.getItem("mbtiScores");
-
-if(!stored){
-document.body.innerHTML="<h2 style='text-align:center;margin-top:100px;'>请先完成测试</h2>";
-}
-
-const scores = JSON.parse(stored);
-
-if(typeof calculateType !== "function"){
-document.body.innerHTML="<h2 style='text-align:center;margin-top:100px;'>算法未加载</h2>";
-}
-
+const scores = JSON.parse(localStorage.getItem("mbtiScores"));
 const type = calculateType(scores);
-
-if(!database[type]){
-document.body.innerHTML="<h2 style='text-align:center;margin-top:100px;'>类型数据未找到</h2>";
-}
-
 const data = database[type];
 
 document.getElementById("type").innerText=type;
 document.getElementById("praise").innerText=data.praise;
+document.getElementById("exclusive").innerText=data.exclusive || "你拥有独特的认知结构与决策逻辑，这种组合使你在人群中形成不可复制的思维优势。";
 document.getElementById("strength").innerText=data.strength;
 document.getElementById("decision").innerText=data.decision;
 document.getElementById("blind").innerText=data.blind;
@@ -79,7 +103,6 @@ plugins:{legend:{display:false}},
 scales:{r:{beginAtZero:true,max:30}}
 }
 });
-
 </script>
 
 </body>
