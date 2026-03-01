@@ -2,75 +2,61 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>MBTI 结果报告</title>
-<link rel="stylesheet" href="style.css">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI 报告</title>
+<script src="mbti.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-.confidence-box{
-  margin-top:20px;
-  padding:16px;
-  border-radius:18px;
-  background:rgba(0,113,227,0.08);
-  font-size:14px;
-}
-
-.retry-btn{
-  margin-top:30px;
-  padding:14px;
-  width:100%;
-  border:none;
-  border-radius:18px;
-  background:#f2f2f2;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.retry-btn:hover{
-  background:#e0e0e0;
-}
+body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:center;}
+.container{max-width:900px;margin:60px auto;}
+.card{background:#fff;padding:40px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.05);margin-bottom:30px;}
+.type{font-size:48px;font-weight:700;margin-bottom:10px;}
 </style>
 </head>
 <body>
 
 <div class="container">
 
-<h1 id="typeTitle"></h1>
-<p id="desc"></p>
+<div class="card">
+<div class="type" id="type"></div>
+<p id="praise"></p>
+</div>
 
-<div class="confidence-box" id="confidence"></div>
+<div class="card">
+<p><strong>核心优势：</strong><span id="strength"></span></p>
+<p><strong>决策风格：</strong><span id="decision"></span></p>
+<p><strong>潜在盲区：</strong><span id="blind"></span></p>
+<p><strong>适合领域：</strong><span id="career"></span></p>
+</div>
 
-<button class="retry-btn" onclick="retry()">重新测试</button>
+<div class="card">
+<canvas id="chart"></canvas>
+</div>
 
 </div>
 
 <script>
-const data=JSON.parse(localStorage.getItem("mbtiResult"));
 
-if(data){
+const scores=JSON.parse(localStorage.getItem("mbtiScores"));
+const type=calculateType();
+const data=database[type];
 
-  document.getElementById("typeTitle").innerText=data.type+" 人格类型";
+document.getElementById("type").innerText=type;
+document.getElementById("praise").innerText=data.praise;
+document.getElementById("strength").innerText=data.strength;
+document.getElementById("decision").innerText=data.decision;
+document.getElementById("blind").innerText=data.blind;
+document.getElementById("career").innerText=data.career;
 
-  document.getElementById("desc").innerText=
-  "本结果基于 48 题加权模型计算得出，反映当前认知倾向结构。";
+new Chart(document.getElementById("chart"),{
+type:"radar",
+data:{
+labels:["主导","辅助","第三","劣势"],
+datasets:[{data:[85,70,55,40]}]
+},
+options:{plugins:{legend:{display:false}},scales:{r:{beginAtZero:true,max:100}}}
+});
 
-  function confidenceCalc(scores){
-    let total=0;
-    for(let key in scores){
-      total+=scores[key];
-    }
-    return Math.min(95,Math.floor(70+total%20));
-  }
-
-  const conf=confidenceCalc(data.scores);
-
-  document.getElementById("confidence").innerHTML=
-  "结果可信度指数： <b>"+conf+"%</b><br>建议在情绪稳定环境下再次测试可获得更高稳定性。";
-}
-
-function retry(){
-  localStorage.clear();
-  window.location.href="index.html";
-}
 </script>
 
 </body>

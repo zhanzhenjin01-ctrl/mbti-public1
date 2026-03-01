@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI Professional 2.0</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box;}
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+background:#f5f6f8;
+color:#111;
+display:flex;
+justify-content:center;
+}
+.container{
+width:92%;
+max-width:900px;
+margin:60px auto;
+}
+.card{
+background:#fff;
+padding:40px;
+border-radius:18px;
+box-shadow:0 10px 40px rgba(0,0,0,0.05);
+margin-bottom:30px;
+}
+.progress-text{font-size:14px;color:#888;margin-bottom:10px;}
+.progress-bar{height:4px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:30px;}
+.progress-fill{height:100%;background:#111;width:0%;transition:0.3s;}
+.question{font-size:22px;text-align:center;margin:40px 0;}
+.scale{display:flex;justify-content:space-between;}
+.option{
+width:52px;height:52px;border-radius:50%;
+border:1px solid #ddd;display:flex;
+align-items:center;justify-content:center;
+cursor:pointer;transition:0.2s;
+}
+.option:hover{background:#111;color:#fff;}
+.type{font-size:48px;font-weight:700;margin-bottom:10px;}
+.section-title{font-weight:600;margin-bottom:20px;}
+.hidden{display:none;}
+.bar{height:6px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:15px;}
+.fill{height:100%;background:#111;}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div id="quizCard" class="card">
+<div class="progress-text" id="progressText"></div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="question" id="question"></div>
+<div class="scale">
+<div class="option" onclick="answer(1)">1</div>
+<div class="option" onclick="answer(2)">2</div>
+<div class="option" onclick="answer(3)">3</div>
+<div class="option" onclick="answer(4)">4</div>
+<div class="option" onclick="answer(5)">5</div>
+</div>
+</div>
+
+<div id="resultSection" class="hidden">
+
+<div class="card">
+<div class="type" id="typeResult"></div>
+<p id="praise"></p>
+</div>
+
+<div class="card">
+<div class="section-title">人格深度解读</div>
+<p><strong>核心优势：</strong><span id="strength"></span></p>
+<p><strong>决策风格：</strong><span id="decision"></span></p>
+<p><strong>潜在盲区：</strong><span id="blind"></span></p>
+<p><strong>适合领域：</strong><span id="career"></span></p>
+</div>
+
+<div class="card">
+<div class="section-title">认知功能图</div>
+<canvas id="funcChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const questions = Array.from({length:48},(_,i)=>({
+text:"第 "+(i+1)+" 题示例陈述。",
+dimension:["E","S","T","J"][Math.floor(i/12)]
+}));
+
+let index=0;
+let scores={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+
+function load(){
+document.getElementById("question").innerText=questions[index].text;
+document.getElementById("progressText").innerText="第 "+(index+1)+" / 48 题";
+document.getElementById("progressFill").style.width=((index)/48*100)+"%";
+}
+load();
+
+function answer(val){
+let dim=questions[index].dimension;
+let opposite={E:"I",S:"N",T:"F",J:"P"}[dim];
+let score=val-3;
+if(score>0){scores[dim]+=score;}
+if(score<0){scores[opposite]+=Math.abs(score);}
+index++;
+if(index<48){
+load();
+}else{
+generateResult();
+}
+}
+
+function getType(s){
+return (s.E>=s.I?'E':'I')+
+(s.S>=s.N?'S':'N')+
+(s.T>=s.F?'T':'F')+
+(s.J>=s.P?'J':'P');
+}
+
+const db={
+INTJ:{praise:"你拥有深远战略视野与冷静理性判断。",strength:"战略布局能力。",decision:"理性长期决策。",blind:"情绪敏感度较低。",career:"战略管理、科技研发。"},
+ENTP:{praise:"你创意无限，善于突破常规。",strength:"创新表达能力。",decision:"多方案博弈。",blind:"持续性不足。",career:"创业、市场营销。"},
+INFJ:{praise:"你洞察人心且富有理想。",strength:"共情与远见。",decision:"价值导向。",blind:"压力内耗。",career:"心理咨询、教育。"},
+ISTJ:{praise:"你稳重可靠，是秩序守护者。",strength:"执行与纪律。",decision:"规则优先。",blind:"灵活度不足。",career:"法律、财务。"}
+};
+
+["INTP","ENTJ","INFP","ENFJ","ENFP","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"]
+.forEach(t=>{
+if(!db[t]){
+db[t]={praise:"你拥有独特稳定的性格优势。",strength:"稳定输出能力。",decision:"综合判断。",blind:"压力下失衡。",career:"多元发展路径。"};
+}
+});
+
+function generateResult(){
+document.getElementById("quizCard").classList.add("hidden");
+document.getElementById("resultSection").classList.remove("hidden");
+
+let type=getType(scores);
+let data=db[type];
+
+document.getElementById("typeResult").innerText=type;
+document.getElementById("praise").innerText=data.praise;
+document.getElementById("strength").innerText=data.strength;
+document.getElementById("decision").innerText=data.decision;
+document.getElementById("blind").innerText=data.blind;
+document.getElementById("career").innerText=data.career;
+
+new Chart(document.getElementById("funcChart"),{
+type:"radar",
+data:{labels:["主导","辅助","第三","劣势"],
+datasets:[{data:[85,70,55,40]}]},
+options:{plugins:{legend:{display:false}},scales:{r:{beginAtZero:true,max:100}}}
+});
+}
+
+</script>
+
+</body>
+</html>

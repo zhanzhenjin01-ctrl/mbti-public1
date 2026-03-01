@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTI Professional Dynamic Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box;}
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+background:#f5f6f8;
+color:#111;
+}
+.container{max-width:900px;margin:60px auto;padding:20px;}
+.card{
+background:#fff;
+padding:40px;
+border-radius:18px;
+box-shadow:0 10px 40px rgba(0,0,0,0.05);
+margin-bottom:30px;
+}
+h1{font-size:34px;margin-bottom:10px;}
+.type{font-size:48px;font-weight:700;letter-spacing:3px;}
+.section-title{font-weight:600;margin-bottom:20px;}
+.bar{height:6px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:15px;}
+.fill{height:100%;background:#111;}
+.footer{text-align:center;color:#888;margin-top:40px;font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="card">
+<h1>MBTI 性格分析报告</h1>
+<div class="type" id="typeResult"></div>
+<p id="praise"></p>
+</div>
+
+<div class="card">
+<div class="section-title">四维度比例</div>
+<div id="dimensions"></div>
+</div>
+
+<div class="card">
+<div class="section-title">认知功能图</div>
+<canvas id="funcChart"></canvas>
+</div>
+
+<div class="card">
+<div class="section-title">人格深度解读</div>
+<p><strong>核心优势：</strong><span id="strength"></span></p>
+<p><strong>决策风格：</strong><span id="decision"></span></p>
+<p><strong>潜在盲区：</strong><span id="blind"></span></p>
+<p><strong>适合领域：</strong><span id="career"></span></p>
+</div>
+
+<div class="footer">
+© 2026 MBTI Professional
+</div>
+
+</div>
+
+<script>
+
+let scores={E:40,I:60,S:30,N:70,T:65,F:35,J:75,P:25};
+
+function getType(s){
+return (s.E>s.I?'E':'I')+
+(s.S>s.N?'S':'N')+
+(s.T>s.F?'T':'F')+
+(s.J>s.P?'J':'P');
+}
+
+let type=getType(scores);
+document.getElementById("typeResult").innerText=type;
+
+// ===== 16 类型完整数据库 =====
+const database={
+INTJ:{
+praise:"你拥有罕见的战略思维与独立判断力。你能够在复杂环境中迅速建立结构，并以冷静理性的方式规划未来。你不是追随者，而是长期格局的构建者。",
+strength:"战略规划能力极强，洞察本质，逻辑清晰。",
+decision:"以理性分析为核心，偏好长期最优解。",
+blind:"可能忽略情绪层面，对低效率缺乏耐心。",
+career:"战略管理、科技研发、金融分析、创业。"
+},
+ENTP:{
+praise:"你思维敏捷且创意无限，擅长在变化中寻找突破。你拥有辩证思维与创新能力，是推动新观点诞生的重要力量。",
+strength:"创新能力强，表达清晰，适应力高。",
+decision:"快速判断机会，倾向多方案并行。",
+blind:"可能三分钟热度，执行持续性不足。",
+career:"创业、市场营销、媒体、创新产业。"
+},
+INFJ:{
+praise:"你拥有深层洞察与温柔力量，能够理解他人内心并给予真正支持。你的理想主义与坚定信念，使你成为精神引导者。",
+strength:"共情能力强，洞察人心，价值观坚定。",
+decision:"以价值观为导向，兼顾长远意义。",
+blind:"可能过度理想化，压力内耗。",
+career:"心理咨询、教育、文化创意、人力资源。"
+},
+ISTJ:{
+praise:"你稳重可靠，责任感极强。你重视秩序与承诺，能够把复杂事务系统化执行，是值得托付的重要力量。",
+strength:"执行力强，严谨负责，稳定性高。",
+decision:"基于事实与规则，重视可控风险。",
+blind:"对变化适应较慢，灵活度不足。",
+career:"管理、财务、法律、行政。"
+}
+};
+
+// 自动补齐剩余类型为通用模板
+["INTP","ENTJ","INFP","ENFJ","ENFP","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"]
+.forEach(t=>{
+if(!database[t]){
+database[t]={
+praise:"你具备独特的性格优势与潜在力量，在团队中往往展现出鲜明特质与稳定价值。你拥有值得被看见的独特光芒。",
+strength:"具备个人优势与稳定输出能力。",
+decision:"依据自身偏好与环境信息综合判断。",
+blind:"在压力下可能出现偏好失衡。",
+career:"适合多元发展路径与成长型环境。"
+};
+}
+});
+
+let data=database[type];
+
+document.getElementById("praise").innerText=data.praise;
+document.getElementById("strength").innerText=data.strength;
+document.getElementById("decision").innerText=data.decision;
+document.getElementById("blind").innerText=data.blind;
+document.getElementById("career").innerText=data.career;
+
+// 维度条
+let dimDiv=document.getElementById("dimensions");
+["E","S","T","J"].forEach(d=>{
+let opposite={E:"I",S:"N",T:"F",J:"P"}[d];
+let percent=scores[d]>scores[opposite]?scores[d]:scores[opposite];
+dimDiv.innerHTML+=`<div>${d}/${opposite} ${percent}%</div><div class="bar"><div class="fill" style="width:${percent}%"></div></div>`;
+});
+
+// 图表
+new Chart(document.getElementById("funcChart"),{
+type:"radar",
+data:{
+labels:["主导","辅助","第三","劣势"],
+datasets:[{data:[85,70,55,40]}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{r:{beginAtZero:true,max:100}}
+}
+});
+
+</script>
+
+</body>
+</html>

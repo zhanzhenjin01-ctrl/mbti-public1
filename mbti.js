@@ -1,27 +1,69 @@
-function calculateMBTI(answers) {
 
-  let scores = {
-    E: 0, I: 0,
-    S: 0, N: 0,
-    T: 0, F: 0,
-    J: 0, P: 0
-  };
+/* ===== 48题结构 ===== */
 
-  answers.forEach((value, index) => {
-    const dim = questions[index].dimension;
+const questions = Array.from({length:48},(_,i)=>({
+  text:"第 "+(i+1)+" 题：这里替换为真实题目内容。",
+  dimension:["E","S","T","J"][Math.floor(i/12)]
+}));
 
-    if (value > 3) {
-      scores[dim[0]] += value - 3;
-    } else if (value < 3) {
-      scores[dim[1]] += 3 - value;
-    }
-  });
+let scores = {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
 
-  const type =
-    (scores.E >= scores.I ? "E" : "I") +
-    (scores.S >= scores.N ? "S" : "N") +
-    (scores.T >= scores.F ? "T" : "F") +
-    (scores.J >= scores.P ? "J" : "P");
-
-  return { type, scores };
+function calculateType(){
+  return (scores.E>=scores.I?'E':'I')+
+         (scores.S>=scores.N?'S':'N')+
+         (scores.T>=scores.F?'T':'F')+
+         (scores.J>=scores.P?'J':'P');
 }
+
+/* ===== 16类型独立专业数据库 ===== */
+
+const database = {
+
+INTJ:{
+praise:"你拥有罕见的战略远见与理性深度。你思考问题从不浮于表面，总能穿透复杂表象看到底层逻辑。你的冷静、自律与长期规划能力，使你在任何环境中都能成为真正的布局者与决策者。你不追逐喧哗，而是悄然构建未来。这样的你，注定走在时代前沿。",
+strength:"系统性战略思维与长期规划能力",
+decision:"基于逻辑与未来收益评估做决策",
+blind:"过度理性可能忽略情绪互动",
+career:"战略咨询、科技研发、投资管理"
+},
+
+INFJ:{
+praise:"你拥有深刻洞察与温柔力量并存的灵魂。你看见他人看不见的情绪波动，也理解复杂的人性结构。你并非高声表达，而是用安静而坚定的方式影响世界。你的理想感与使命感，会在时间的沉淀中成为真正的改变力量。",
+strength:"洞察人心与价值驱动愿景能力",
+decision:"基于价值观与长期意义选择方向",
+blind:"容易自我消耗与情绪内耗",
+career:"心理咨询、教育、社会影响领域"
+},
+
+ENTP:{
+praise:"你天生拥有突破边界的创造力与辩证思维。你能在混乱中看到可能，在争议中找到新解法。你的表达锋利却充满幽默感，你的脑海永远在构建下一个颠覆性想法。世界因你的好奇与冒险精神而更加有趣。",
+strength:"创新表达与快速思维整合能力",
+decision:"多方案博弈后选择潜力最大路径",
+blind:"持续专注力易分散",
+career:"创业、产品创新、市场战略"
+},
+
+ISTJ:{
+praise:"你是秩序与可靠性的化身。无论环境多么变化，你都能保持稳定输出与责任感。你的执行力、纪律性与细节掌控能力，使你成为团队中最值得信赖的人。你的力量不是张扬，而是长久的稳定。",
+strength:"执行力与规则管理能力",
+decision:"基于规则与事实数据决策",
+blind:"对变化适应节奏较慢",
+career:"法律、财务、系统管理"
+}
+
+};
+
+/* 自动补全其余类型 */
+const allTypes=["INTP","ENTJ","INFP","ENFJ","ENFP","ISFJ","ESTJ","ESFJ","ISTP","ISFP","ESTP","ESFP"];
+allTypes.forEach(t=>{
+if(!database[t]){
+database[t]={
+praise:"你拥有独特而不可替代的性格优势。你的存在本身就是一种稳定与价值的体现。你能在不同情境中展现属于自己的光芒，无论是逻辑、情感、行动或表达，你都具备成长为卓越版本自己的潜力。世界需要你的独特表达。",
+strength:"综合适应与稳定成长能力",
+decision:"综合情境因素权衡选择",
+blind:"在压力下可能出现节奏失衡",
+career:"多领域发展空间"
+}
+}
+});
+
