@@ -5,41 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MBTI 报告</title>
 <script src="mbti.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:center;}
 .container{max-width:900px;margin:60px auto;}
 .card{background:#fff;padding:40px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.05);margin-bottom:30px;}
-.type{font-size:48px;font-weight:700;margin-bottom:10px;}
+.type{font-size:48px;font-weight:700;margin-bottom:20px;}
 </style>
 </head>
 <body>
 
 <div class="container">
-
 <div class="card">
 <div class="type" id="type"></div>
 <p id="praise"></p>
-</div>
-
-<div class="card">
 <p><strong>核心优势：</strong><span id="strength"></span></p>
 <p><strong>决策风格：</strong><span id="decision"></span></p>
 <p><strong>潜在盲区：</strong><span id="blind"></span></p>
 <p><strong>适合领域：</strong><span id="career"></span></p>
 </div>
-
-<div class="card">
-<canvas id="chart"></canvas>
-</div>
-
 </div>
 
 <script>
 
-const scores=JSON.parse(localStorage.getItem("mbtiScores"));
-const type=calculateType();
-const data=database[type];
+const scores = JSON.parse(localStorage.getItem("mbtiScores"));
+if(!scores){ document.body.innerHTML="<h2 style='text-align:center;margin-top:100px;'>请先完成测试</h2>"; }
+
+const type = calculateType(scores);
+const data = database[type];
 
 document.getElementById("type").innerText=type;
 document.getElementById("praise").innerText=data.praise;
@@ -47,15 +39,6 @@ document.getElementById("strength").innerText=data.strength;
 document.getElementById("decision").innerText=data.decision;
 document.getElementById("blind").innerText=data.blind;
 document.getElementById("career").innerText=data.career;
-
-new Chart(document.getElementById("chart"),{
-type:"radar",
-data:{
-labels:["主导","辅助","第三","劣势"],
-datasets:[{data:[85,70,55,40]}]
-},
-options:{plugins:{legend:{display:false}},scales:{r:{beginAtZero:true,max:100}}}
-});
 
 </script>
 
