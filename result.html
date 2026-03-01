@@ -2,118 +2,54 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>MBTI 性格测试结果</title>
-<meta name="description" content="专业 MBTI 性格测试报告，基于认知功能模型生成完整人格分析">
+<title>MBTI 结果报告</title>
 <link rel="stylesheet" href="style.css">
-
 <style>
-.chart-bar {
-  height: 8px;
-  border-radius: 6px;
-  background: linear-gradient(90deg,#0071e3,#42a5f5);
-  margin-bottom: 18px;
-  transition: width 0.6s ease;
-}
-.email-box {
-  margin-top:40px;
-  padding:20px;
-  border-radius:20px;
-  background:rgba(0,0,0,0.04);
-}
-input{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:12px;
-  border:1px solid rgba(0,0,0,0.1);
-}
-button{
-  margin-top:15px;
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:16px;
-  background:#0071e3;
-  color:white;
-  cursor:pointer;
+.func-bar{
+  height:10px;
+  border-radius:6px;
+  margin-bottom:18px;
+  background:linear-gradient(90deg,#0071e3,#42a5f5);
+  transition:width 0.8s ease;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1 id="typeTitle"></h1>
-  <p id="typeDesc"></p>
-
-  <h3>维度倾向</h3>
-  <div>E-I <div id="EI" class="chart-bar"></div></div>
-  <div>S-N <div id="SN" class="chart-bar"></div></div>
-  <div>T-F <div id="TF" class="chart-bar"></div></div>
-  <div>J-P <div id="JP" class="chart-bar"></div></div>
-
-  <h3>认知功能结构</h3>
-  <div id="cognitive"></div>
-
-  <div class="email-box">
-    <h3>获取 30 页完整版深度报告</h3>
-    <form action="https://formspree.io/f/YOUR_ID" method="POST">
-      <input type="email" name="email" placeholder="输入你的邮箱">
-      <button type="submit">获取完整版报告</button>
-    </form>
-  </div>
+<h1 id="typeTitle"></h1>
+<div id="functions"></div>
 </div>
 
 <script>
-const data = JSON.parse(localStorage.getItem("mbtiResult"));
-const descriptions = {
-  INTJ:"战略型人格，核心驱动力来自长期结构构建与系统优化。",
-  INTP:"逻辑探索者，倾向抽象推理与理论建模。",
-  ENTJ:"战略执行者，擅长资源整合与结构掌控。",
-  ENTP:"创新辩论者，快速生成可能性并挑战假设。",
-  INFJ:"洞察型引导者，关注长期意义与人类成长。",
-  INFP:"理想主义者，重视内在价值与真实表达。",
-  ENFJ:"情感领导者，擅长人际连接与激励他人。",
-  ENFP:"可能性探索者，充满创造力与热情。",
-  ISTJ:"结构执行者，重视秩序与可靠性。",
-  ISFJ:"守护型人格，稳定而责任感强。",
-  ESTJ:"现实管理者，执行力与组织力突出。",
-  ESFJ:"关系协调者，关注群体稳定。",
-  ISTP:"冷静分析者，动手能力强。",
-  ISFP:"审美体验者，追求真实与自由。",
-  ESTP:"行动派，偏好即时反馈与冒险。",
-  ESFP:"舞台型人格，充满感染力。"
+const data=JSON.parse(localStorage.getItem("mbtiResult"));
+
+const cognitiveMap={
+  INTJ:["Ni","Te","Fi","Se"],
+  INTP:["Ti","Ne","Si","Fe"],
+  ENTJ:["Te","Ni","Se","Fi"],
+  ENTP:["Ne","Ti","Fe","Si"],
+  INFJ:["Ni","Fe","Ti","Se"],
+  INFP:["Fi","Ne","Si","Te"],
+  ENFJ:["Fe","Ni","Se","Ti"],
+  ENFP:["Ne","Fi","Te","Si"]
 };
 
 if(data){
-  document.getElementById("typeTitle").innerText = data.type + " 人格类型";
-  document.getElementById("typeDesc").innerText = descriptions[data.type];
+  document.getElementById("typeTitle").innerText=data.type+" 认知功能结构";
 
-  function percent(a,b){
-    return (a/(a+b))*100;
-  }
+  const funcs=cognitiveMap[data.type]||["主导","辅助","第三","劣势"];
 
-  document.getElementById("EI").style.width =
-    percent(data.scores.E,data.scores.I)+"%";
+  let html="";
+  funcs.forEach((f,i)=>{
+    html+=`
+      <div>${f}
+        <div class="func-bar" style="width:${100-(i*20)}%"></div>
+      </div>
+    `;
+  });
 
-  document.getElementById("SN").style.width =
-    percent(data.scores.S,data.scores.N)+"%";
-
-  document.getElementById("TF").style.width =
-    percent(data.scores.T,data.scores.F)+"%";
-
-  document.getElementById("JP").style.width =
-    percent(data.scores.J,data.scores.P)+"%";
-
-  document.getElementById("cognitive").innerHTML = `
-    <svg width="100%" height="120">
-      <circle cx="60" cy="60" r="40" fill="#0071e3" opacity="0.2"/>
-      <text x="60" y="65" text-anchor="middle">主导</text>
-      <circle cx="160" cy="60" r="30" fill="#0071e3" opacity="0.15"/>
-      <text x="160" y="65" text-anchor="middle">辅助</text>
-      <circle cx="240" cy="60" r="20" fill="#0071e3" opacity="0.1"/>
-      <text x="240" y="65" text-anchor="middle">第三</text>
-    </svg>
-  `;
+  document.getElementById("functions").innerHTML=html;
 }
 </script>
 

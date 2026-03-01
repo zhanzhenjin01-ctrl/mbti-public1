@@ -6,10 +6,21 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-.scale-container{
-  margin-top:18px;
+body{
+  overflow:hidden;
 }
 
+/* 粒子背景 */
+#bg{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:-1;
+}
+
+/* 量表样式保持 */
 .scale-labels{
   display:flex;
   justify-content:space-between;
@@ -21,8 +32,6 @@
 .options{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-top:10px;
 }
 
 .circle{
@@ -39,29 +48,10 @@
   background:white;
 }
 
-/* 两端渐变暗示强弱 */
-.circle[data-value="1"]{
-  background:linear-gradient(135deg,#dbe9ff,#0071e3);
-  color:white;
-}
-.circle[data-value="5"]{
-  background:linear-gradient(135deg,#ffe0e0,#ff3b30);
-  color:white;
-}
+.circle[data-value="1"]{background:#0071e3;color:white;}
+.circle[data-value="5"]{background:#ff3b30;color:white;}
+.circle[data-value="3"]{background:#f2f2f2;font-weight:600;}
 
-/* 中间值强调中性 */
-.circle[data-value="3"]{
-  background:#f2f2f2;
-  font-weight:600;
-}
-
-/* hover 动效 */
-.circle:hover{
-  transform:scale(1.15);
-  box-shadow:0 6px 18px rgba(0,0,0,0.12);
-}
-
-/* 选择后反馈 */
 .circle.active{
   transform:scale(1.2);
   box-shadow:0 8px 22px rgba(0,0,0,0.18);
@@ -71,6 +61,8 @@
 
 <body>
 
+<canvas id="bg"></canvas>
+
 <div class="container" id="card">
 
   <div class="progress">
@@ -78,28 +70,22 @@
   </div>
 
   <div class="question-count" id="questionCount"></div>
-
   <h1 id="questionText"></h1>
 
-  <div class="scale-container">
+  <div class="scale-labels">
+    <span>1 非常不同意</span>
+    <span>2 比较不同意</span>
+    <span>3 中立</span>
+    <span>4 比较同意</span>
+    <span>5 非常同意</span>
+  </div>
 
-    <!-- 12345 全部说明 -->
-    <div class="scale-labels">
-      <span>1 非常不同意</span>
-      <span>2 比较不同意</span>
-      <span>3 中立</span>
-      <span>4 比较同意</span>
-      <span>5 非常同意</span>
-    </div>
-
-    <div class="options">
-      <div class="circle" data-value="1" onclick="selectAnswer(this,1)">1</div>
-      <div class="circle" data-value="2" onclick="selectAnswer(this,2)">2</div>
-      <div class="circle" data-value="3" onclick="selectAnswer(this,3)">3</div>
-      <div class="circle" data-value="4" onclick="selectAnswer(this,4)">4</div>
-      <div class="circle" data-value="5" onclick="selectAnswer(this,5)">5</div>
-    </div>
-
+  <div class="options">
+    <div class="circle" data-value="1" onclick="selectAnswer(this,1)">1</div>
+    <div class="circle" data-value="2" onclick="selectAnswer(this,2)">2</div>
+    <div class="circle" data-value="3" onclick="selectAnswer(this,3)">3</div>
+    <div class="circle" data-value="4" onclick="selectAnswer(this,4)">4</div>
+    <div class="circle" data-value="5" onclick="selectAnswer(this,5)">5</div>
   </div>
 
 </div>
@@ -108,48 +94,101 @@
 <script src="mbti.js"></script>
 
 <script>
-let currentQuestion = 0;
-let answers = [];
+/* =====================
+   粒子背景
+===================== */
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    r:Math.random()*2+1,
+    dx:(Math.random()-0.5)*0.5,
+    dy:(Math.random()-0.5)*0.5
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="rgba(0,113,227,0.15)";
+  particles.forEach(p=>{
+    p.x+=p.dx;
+    p.y+=p.dy;
+    if(p.x<0||p.x>canvas.width)p.dx*=-1;
+    if(p.y<0||p.y>canvas.height)p.dy*=-1;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* =====================
+   答题逻辑
+===================== */
+let currentQuestion=0;
+let answers=[];
 
 function loadQuestion(){
-  const card = document.getElementById("card");
-  card.classList.add("slide");
+  document.getElementById("questionText").innerText=questions[currentQuestion].text;
+  document.getElementById("questionCount").innerText=
+    "第 "+(currentQuestion+1)+" / "+questions.length+" 题";
 
-  setTimeout(()=>{
-    document.getElementById("questionText").innerText = questions[currentQuestion].text;
-    document.getElementById("questionCount").innerText =
-      "第 " + (currentQuestion+1) + " / " + questions.length + " 题";
+  document.getElementById("progressBar").style.width=
+    ((currentQuestion+1)/questions.length*100)+"%";
+}
 
-    const progress = ((currentQuestion+1)/questions.length)*100;
-    document.getElementById("progressBar").style.width = progress + "%";
-
-    card.classList.remove("slide");
-  },200);
+/* 声音反馈 */
+const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+function playSound(){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.frequency.value=600;
+  osc.type="sine";
+  gain.gain.value=0.1;
+  osc.start();
+  setTimeout(()=>{osc.stop();},100);
 }
 
 function selectAnswer(el,value){
 
-  // 清除上一次选中效果
-  document.querySelectorAll(".circle").forEach(c=>{
-    c.classList.remove("active");
-  });
-
-  // 当前按钮高亮反馈
+  document.querySelectorAll(".circle").forEach(c=>c.classList.remove("active"));
   el.classList.add("active");
+
+  playSound();
 
   setTimeout(()=>{
     answers.push(value);
     currentQuestion++;
 
-    if(currentQuestion < questions.length){
+    if(currentQuestion<questions.length){
       loadQuestion();
     }else{
-      const result = calculateMBTI(answers);
+      const result=calculateMBTI(answers);
       localStorage.setItem("mbtiResult",JSON.stringify(result));
       window.location.href="result.html";
     }
   },250);
 }
+
+/* 手机滑动答题 */
+let startX=0;
+document.addEventListener("touchstart",e=>{
+  startX=e.changedTouches[0].screenX;
+});
+document.addEventListener("touchend",e=>{
+  let endX=e.changedTouches[0].screenX;
+  if(endX-startX>80) selectAnswer(document.querySelector('[data-value="5"]'),5);
+  if(startX-endX>80) selectAnswer(document.querySelector('[data-value="1"]'),1);
+});
 
 loadQuestion();
 </script>
