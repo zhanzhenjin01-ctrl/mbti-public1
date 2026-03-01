@@ -1,25 +1,74 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>MBTI 专业测试</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .scale-guide {
-      display:flex;
-      justify-content:space-between;
-      font-size:12px;
-      opacity:0.6;
-      margin-top:10px;
-    }
-    .scale-center {
-      text-align:center;
-      font-size:12px;
-      opacity:0.5;
-      margin-top:8px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>MBTI 专业测试</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+.scale-container{
+  margin-top:18px;
+}
+
+.scale-labels{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  opacity:0.65;
+  margin-bottom:12px;
+}
+
+.options{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:10px;
+}
+
+.circle{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:13px;
+  transition:all 0.25s ease;
+  border:1px solid rgba(0,0,0,0.08);
+  background:white;
+}
+
+/* 两端渐变暗示强弱 */
+.circle[data-value="1"]{
+  background:linear-gradient(135deg,#dbe9ff,#0071e3);
+  color:white;
+}
+.circle[data-value="5"]{
+  background:linear-gradient(135deg,#ffe0e0,#ff3b30);
+  color:white;
+}
+
+/* 中间值强调中性 */
+.circle[data-value="3"]{
+  background:#f2f2f2;
+  font-weight:600;
+}
+
+/* hover 动效 */
+.circle:hover{
+  transform:scale(1.15);
+  box-shadow:0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* 选择后反馈 */
+.circle.active{
+  transform:scale(1.2);
+  box-shadow:0 8px 22px rgba(0,0,0,0.18);
+}
+</style>
 </head>
+
 <body>
 
 <div class="container" id="card">
@@ -32,22 +81,25 @@
 
   <h1 id="questionText"></h1>
 
-  <!-- 新增说明 -->
-  <div class="scale-center">
-    请选择你对该陈述的认同程度
-  </div>
+  <div class="scale-container">
 
-  <div class="scale-guide">
-    <span>1 = 非常不同意</span>
-    <span>5 = 非常同意</span>
-  </div>
+    <!-- 12345 全部说明 -->
+    <div class="scale-labels">
+      <span>1 非常不同意</span>
+      <span>2 比较不同意</span>
+      <span>3 中立</span>
+      <span>4 比较同意</span>
+      <span>5 非常同意</span>
+    </div>
 
-  <div class="options">
-    <div class="circle" onclick="selectAnswer(1)">1</div>
-    <div class="circle" onclick="selectAnswer(2)">2</div>
-    <div class="circle" onclick="selectAnswer(3)">3</div>
-    <div class="circle" onclick="selectAnswer(4)">4</div>
-    <div class="circle" onclick="selectAnswer(5)">5</div>
+    <div class="options">
+      <div class="circle" data-value="1" onclick="selectAnswer(this,1)">1</div>
+      <div class="circle" data-value="2" onclick="selectAnswer(this,2)">2</div>
+      <div class="circle" data-value="3" onclick="selectAnswer(this,3)">3</div>
+      <div class="circle" data-value="4" onclick="selectAnswer(this,4)">4</div>
+      <div class="circle" data-value="5" onclick="selectAnswer(this,5)">5</div>
+    </div>
+
   </div>
 
 </div>
@@ -59,33 +111,44 @@
 let currentQuestion = 0;
 let answers = [];
 
-function loadQuestion() {
+function loadQuestion(){
   const card = document.getElementById("card");
   card.classList.add("slide");
 
-  setTimeout(() => {
+  setTimeout(()=>{
     document.getElementById("questionText").innerText = questions[currentQuestion].text;
     document.getElementById("questionCount").innerText =
-      "第 " + (currentQuestion + 1) + " / " + questions.length + " 题";
+      "第 " + (currentQuestion+1) + " / " + questions.length + " 题";
 
-    const progress = ((currentQuestion + 1) / questions.length) * 100;
+    const progress = ((currentQuestion+1)/questions.length)*100;
     document.getElementById("progressBar").style.width = progress + "%";
 
     card.classList.remove("slide");
-  }, 200);
+  },200);
 }
 
-function selectAnswer(value) {
-  answers.push(value);
-  currentQuestion++;
+function selectAnswer(el,value){
 
-  if (currentQuestion < questions.length) {
-    loadQuestion();
-  } else {
-    const result = calculateMBTI(answers);
-    localStorage.setItem("mbtiResult", JSON.stringify(result));
-    window.location.href = "result.html";
-  }
+  // 清除上一次选中效果
+  document.querySelectorAll(".circle").forEach(c=>{
+    c.classList.remove("active");
+  });
+
+  // 当前按钮高亮反馈
+  el.classList.add("active");
+
+  setTimeout(()=>{
+    answers.push(value);
+    currentQuestion++;
+
+    if(currentQuestion < questions.length){
+      loadQuestion();
+    }else{
+      const result = calculateMBTI(answers);
+      localStorage.setItem("mbtiResult",JSON.stringify(result));
+      window.location.href="result.html";
+    }
+  },250);
 }
 
 loadQuestion();
