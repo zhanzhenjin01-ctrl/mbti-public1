@@ -148,3 +148,96 @@ loadQuestion();
 
 </body>
 </html>
+
+<style>
+
+/* ===== UI 强化补丁 v5 ===== */
+
+body{
+background:#f5f5f7 !important;
+font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif !important;
+}
+
+.container{
+max-width:760px !important;
+margin:120px auto !important;
+padding:0 40px !important;
+}
+
+.question{
+font-size:28px !important;
+line-height:1.6 !important;
+font-weight:500 !important;
+margin-bottom:90px !important;
+color:#1d1d1f !important;
+text-align:left !important;
+}
+
+.progress{
+font-size:13px !important;
+letter-spacing:0.08em !important;
+color:#86868b !important;
+margin-bottom:60px !important;
+}
+
+.scale{
+display:flex !important;
+justify-content:space-between !important;
+align-items:center !important;
+gap:20px !important;
+}
+
+.option{
+width:56px !important;
+height:56px !important;
+border-radius:50% !important;
+border:1px solid #d2d2d7 !important;
+background:#fff !important;
+font-size:15px !important;
+transition:all .2s ease !important;
+}
+
+.option:hover{
+background:#000 !important;
+color:#fff !important;
+border-color:#000 !important;
+transform:scale(1.12) !important;
+}
+
+/* 添加明确的 1-5 解释条 */
+.scale::before{
+content:"1 = 强烈反对";
+font-size:14px;
+color:#6e6e73;
+position:absolute;
+left:0;
+transform:translateY(-60px);
+}
+
+.scale::after{
+content:"5 = 强烈认同";
+font-size:14px;
+color:#6e6e73;
+position:absolute;
+right:0;
+transform:translateY(-60px);
+}
+
+.hint{
+display:flex !important;
+justify-content:space-between !important;
+margin-top:18px !important;
+font-size:13px !important;
+color:#8e8e93 !important;
+}
+
+.hint::before{
+content:"数字越小越不符合";
+}
+
+.hint::after{
+content:"数字越大越符合";
+}
+
+</style>
+
