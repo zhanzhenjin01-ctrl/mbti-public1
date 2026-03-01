@@ -4,6 +4,21 @@
   <meta charset="UTF-8">
   <title>MBTI 专业测试</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .scale-guide {
+      display:flex;
+      justify-content:space-between;
+      font-size:12px;
+      opacity:0.6;
+      margin-top:10px;
+    }
+    .scale-center {
+      text-align:center;
+      font-size:12px;
+      opacity:0.5;
+      margin-top:8px;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,6 +31,16 @@
   <div class="question-count" id="questionCount"></div>
 
   <h1 id="questionText"></h1>
+
+  <!-- 新增说明 -->
+  <div class="scale-center">
+    请选择你对该陈述的认同程度
+  </div>
+
+  <div class="scale-guide">
+    <span>1 = 非常不同意</span>
+    <span>5 = 非常同意</span>
+  </div>
 
   <div class="options">
     <div class="circle" onclick="selectAnswer(1)">1</div>
