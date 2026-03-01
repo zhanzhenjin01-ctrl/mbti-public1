@@ -11,110 +11,77 @@ body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
 background:#ffffff;
-color:#1d1d1f;
 display:flex;
 justify-content:center;
+align-items:center;
+min-height:100vh;
 }
 
-.wrapper{
-max-width:760px;
-width:100%;
-padding:120px 40px 100px;
+.container{
+width:680px;
+text-align:center;
 }
 
 .progress{
-font-size:13px;
-letter-spacing:.08em;
-color:#86868b;
-margin-bottom:60px;
+font-size:14px;
+color:#8e8e93;
+margin-bottom:40px;
 }
 
 .question{
-font-size:28px;
-font-weight:500;
+font-size:24px;
+margin-bottom:80px;
 line-height:1.6;
-margin-bottom:100px;
 }
 
-.scale-container{
-display:flex;
-flex-direction:column;
-gap:24px;
+.scale-guide{
+font-size:13px;
+color:#8e8e93;
+margin-bottom:20px;
 }
 
-.scale-labels{
-display:flex;
-justify-content:space-between;
-font-size:14px;
-color:#6e6e73;
-}
-
-.scale{
+.options{
 display:flex;
 justify-content:space-between;
-align-items:center;
 }
 
-.option{
-width:56px;
-height:56px;
+.btn{
+width:52px;
+height:52px;
 border-radius:50%;
 border:1px solid #d2d2d7;
-background:#fff;
 display:flex;
 align-items:center;
 justify-content:center;
 cursor:pointer;
-font-size:15px;
-transition:all .2s ease;
+transition:.2s;
 }
 
-.option:hover{
+.btn:hover{
 background:#000;
 color:#fff;
-border-color:#000;
-transform:scale(1.15);
 }
-
-.guide{
-display:flex;
-justify-content:space-between;
-font-size:13px;
-color:#8e8e93;
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="wrapper">
+<div class="container">
 
 <div class="progress" id="progress"></div>
 
 <div class="question" id="question"></div>
 
-<div class="scale-container">
-
-<div class="scale-labels">
-<span>1 = 强烈反对</span>
-<span>5 = 强烈认同</span>
+<div class="scale-guide">
+1 = 非常不同意 ｜ 3 = 中立 ｜ 5 = 非常同意
 </div>
 
-<div class="scale">
-<div class="option" onclick="answer(1)">1</div>
-<div class="option" onclick="answer(2)">2</div>
-<div class="option" onclick="answer(3)">3</div>
-<div class="option" onclick="answer(4)">4</div>
-<div class="option" onclick="answer(5)">5</div>
-</div>
-
-<div class="guide">
-<span>数字越小表示越不符合你</span>
-<span>3 表示中立</span>
-<span>数字越大表示越符合你</span>
-</div>
-
+<div class="options">
+<div class="btn" onclick="answer(1)">1</div>
+<div class="btn" onclick="answer(2)">2</div>
+<div class="btn" onclick="answer(3)">3</div>
+<div class="btn" onclick="answer(4)">4</div>
+<div class="btn" onclick="answer(5)">5</div>
 </div>
 
 </div>
@@ -125,19 +92,16 @@ let scores={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
 
 function loadQuestion(){
 document.getElementById("question").innerText=questions[currentIndex].text;
-document.getElementById("progress").innerText="QUESTION "+(currentIndex+1)+" / "+questions.length;
+document.getElementById("progress").innerText=(currentIndex+1)+" / "+questions.length;
 }
 
 function answer(val){
 let dim=questions[currentIndex].dimension;
 let opposite={E:"I",S:"N",T:"F",J:"P"}[dim];
 let score=val-3;
-
 if(score>0){scores[dim]+=score;}
 if(score<0){scores[opposite]+=Math.abs(score);}
-
 currentIndex++;
-
 if(currentIndex<questions.length){
 loadQuestion();
 }else{
@@ -145,7 +109,6 @@ localStorage.setItem("mbtiScores",JSON.stringify(scores));
 window.location.href="result.html";
 }
 }
-
 loadQuestion();
 </script>
 
