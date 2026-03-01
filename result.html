@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MBTI 报告</title>
 <script src="mbti.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:center;}
+body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:center;margin:0;}
 .container{max-width:900px;margin:60px auto;}
 .card{background:#fff;padding:40px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.05);margin-bottom:30px;}
 .type{font-size:48px;font-weight:700;margin-bottom:20px;}
@@ -15,6 +16,7 @@ body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:c
 <body>
 
 <div class="container">
+
 <div class="card">
 <div class="type" id="type"></div>
 <p id="praise"></p>
@@ -23,14 +25,33 @@ body{font-family:-apple-system;background:#f5f6f8;display:flex;justify-content:c
 <p><strong>潜在盲区：</strong><span id="blind"></span></p>
 <p><strong>适合领域：</strong><span id="career"></span></p>
 </div>
+
+<div class="card">
+<canvas id="chart"></canvas>
+</div>
+
 </div>
 
 <script>
 
-const scores = JSON.parse(localStorage.getItem("mbtiScores"));
-if(!scores){ document.body.innerHTML="<h2 style='text-align:center;margin-top:100px;'>请先完成测试</h2>"; }
+const stored = localStorage.getItem("mbtiScores");
+
+if(!stored){
+document.body.innerHTML="<h2 style='text-align:center;margin-top:100px;'>请先完成测试</h2>";
+}
+
+const scores = JSON.parse(stored);
+
+if(typeof calculateType !== "function"){
+document.body.innerHTML="<h2 style='text-align:center;margin-top:100px;'>算法未加载</h2>";
+}
 
 const type = calculateType(scores);
+
+if(!database[type]){
+document.body.innerHTML="<h2 style='text-align:center;margin-top:100px;'>类型数据未找到</h2>";
+}
+
 const data = database[type];
 
 document.getElementById("type").innerText=type;
@@ -39,6 +60,25 @@ document.getElementById("strength").innerText=data.strength;
 document.getElementById("decision").innerText=data.decision;
 document.getElementById("blind").innerText=data.blind;
 document.getElementById("career").innerText=data.career;
+
+new Chart(document.getElementById("chart"),{
+type:"radar",
+data:{
+labels:["E/I","S/N","T/F","J/P"],
+datasets:[{
+data:[
+scores.E+scores.I,
+scores.S+scores.N,
+scores.T+scores.F,
+scores.J+scores.P
+]
+}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{r:{beginAtZero:true,max:30}}
+}
+});
 
 </script>
 
